@@ -44,8 +44,10 @@ def download(key):
 @task
 def combine_and_write(sources, target, append_dim, first=True):
     import xarray as xr
-    # couldn't figure out how to do this with fsspec and open_mfdataset
     dsets = []
+    # while debugging this, I had itermittent fsspec / hdf5 read errors related to
+    # "trying to read from a closed file"
+    # but they seem to have gone away for now
     double_open_files = [fsspec.open(url).open() for url in sources]
     ds = xr.open_mfdataset(double_open_files, combine='nested', concat_dim=concat_dim)
  
