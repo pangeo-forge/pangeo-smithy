@@ -50,7 +50,9 @@ def combine_and_write(sources, target, append_dim, first=True):
     # but they seem to have gone away for now
     double_open_files = [fsspec.open(url).open() for url in sources]
     ds = xr.open_mfdataset(double_open_files, combine='nested', concat_dim=concat_dim)
- 
+    # by definition, this should be a contiguous chunk
+    ds = ds.chunk({append_dim: len(sources)})
+
     if first:
         kwargs = dict(mode='w')
     else:
